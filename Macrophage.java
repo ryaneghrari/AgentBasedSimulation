@@ -15,14 +15,16 @@ public class Macrophage extends Agent
 		    setRowCol(x,y);	
 		}
 
-		protected Cell getPreferredMove(ArrayList<Cell> list, Agent a, Cell[][] landscape)
+		protected Cell getPreferredMove(ArrayList<Cell> list, Cell[][] landscape)
 		{
-				int row = a.getRow();
-				int col = a.getCol();
+			System.out.println("Macro's method");
+
+				int row = this.getRow();
+				int col = this.getCol();
 
 				if(list.size() == 0)
 				{
-						Cell cell = new Cell(row,col);
+						Cell cell = landscape[row][col];
 						return cell;
 				}
 
@@ -52,26 +54,8 @@ public class Macrophage extends Agent
 				}	
 		}
 
-	public boolean isMoveNextEvent() 
-    { 
-    	if(isMove)
-    	{
-    		nextEvents[0] += Simulation.rand.nextDouble();
-    	}
-    	return(isMove); 
-    	
-    }
-
     public void scheduleEat(double time)
     {
-    	nextEvents[0] = Double.MAX_VALUE;
     	nextEvents[1] = time;//+ Simulation.rand.nextDouble();
-    	
-    	isMove = false;
-    }
-
-    public void cantEat() {
-    	nextEvents[1] = Double.MAX_VALUE;
-    	isMove = true;
     }
 }

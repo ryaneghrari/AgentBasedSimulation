@@ -11,7 +11,7 @@ public class Tester
 
         Simulation s = new Simulation(numCells, guiCellWidth,
                                       numMacrophages, numBacteria,maxTime);
-        double guiDelayInSecs = 3.0;
+        double guiDelayInSecs = 1.0;
         s.run(guiDelayInSecs);
     }
 }

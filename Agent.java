@@ -10,7 +10,6 @@ public class Agent implements AgentInterface
 	protected int id;
     //CHANGE THIS BACK TO PROTECTED
 	public double[] nextEvents;
-    protected boolean isMove;
     
 	public Agent(AgentType which)
     {
@@ -21,23 +20,13 @@ public class Agent implements AgentInterface
 	    nextEvents = new double[2];
 	    nextEvents[0] = Simulation.rand.nextDouble();
 	    nextEvents[1] = Double.MAX_VALUE;
-	    isMove = true;
     }
 
     public int getRow() { return(row); }
     public int getCol() { return(col); }
-    
     public AgentType getType() { return(type); }
 
-    
-
-    public void setRowCol(int row, int col)
-    {
-        this.row = row;
-        this.col = col;
-    }
-
-    public int getID()
+  	public int getID()
     {
 		return id;
     }
@@ -46,14 +35,30 @@ public class Agent implements AgentInterface
     {
     	if(nextEvents[0] < nextEvents[1]) //prioritize eat
     	{
-    		isMove = true;
     		return nextEvents[0];
     	}
     	else
     	{
-    		isMove = false;
     		return nextEvents[1];
     	}
+    }
+
+    public boolean isMoveNextEvent() 
+    { 
+    	if(nextEvents[0] < nextEvents[1]) //prioritize eat
+    	{
+    		return true;
+    	}
+    	else
+    	{
+    		return false;
+    	} 	
+    }
+
+    public void setRowCol(int row, int col)
+    {
+        this.row = row;
+        this.col = col;
     }
 
     public void scheduleNextMove(double time)
@@ -64,10 +69,17 @@ public class Agent implements AgentInterface
     public Cell calculateMove(Cell[][] landscape)
 	{	
 		ArrayList<Cell> avail = getNeighborhood(this.getRow(),this.getCol(), landscape);
-				                
-		Cell cell = getPreferredMove(avail,this, landscape);															  
-			
-		return cell;																									                
+		
+		if(avail.size() != 0)		                
+		{
+			Cell cell = getPreferredMove(avail, landscape);	
+			return cell;														  
+		}
+		
+		// if no new location is available return current location, i.e. don't move 
+		Cell currentCell = landscape[this.getRow()][this.getCol()];
+		return currentCell;
+																											                
 	}
 		
 	protected ArrayList<Cell> getNeighborhood(int x, int y, Cell[][] landscape)
@@ -81,7 +93,7 @@ public class Agent implements AgentInterface
 		{
 			for(int j = -1; j <= 1; j++)
 			{
-				if(i == 1 && j == 1)
+				if(i == 0 && j == 0)
 				{
 					continue;
 				}
@@ -95,14 +107,6 @@ public class Agent implements AgentInterface
 				{
 					available.add(newCell);	
 				}	
-				/*			
-				else if(landscape[x][y] == null)
-				{
-					System.out.println("WTFFFFFF: " + x + ",,,,,"  + y);
-				}
-				*/
-				//else if(newCell.getType() != landscape[x][y].getType()) 
-				// WE NEED TO CHANGE THIS!!!
 				else if(newCell.hasMacrophage() && type == AgentType.BACTERIUM)
 				{
 					available.add(newCell);
@@ -113,18 +117,27 @@ public class Agent implements AgentInterface
 				}
 
 				index++;
-				}
-			}		
-			return available;
-		}
+			}
+		}		
+		return available;
+	}
 
-		protected Cell getPreferredMove(ArrayList<Cell> list, Agent a, Cell[][] landscape)
+	protected Cell getPreferredMove(ArrayList<Cell> list, Cell[][] landscape)
+	{
+		System.out.println("Agent's method");
+		
+		int row = this.getRow();
+		int col = this.getCol();
+
+		if(list.size() == 0)
 		{
-				int row = a.getRow();
-				int col = a.getCol();
-
-				Cell cell = new Cell(row,col);
+				Cell cell = landscape[row][col];
 				return cell;
 		}
+
+		int index = Simulation.rand.nextInt(list.size());	
+		return list.get(index);	
+			
+	}
 
 }

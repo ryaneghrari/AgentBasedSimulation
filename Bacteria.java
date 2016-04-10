@@ -14,48 +14,39 @@ public class Bacteria extends Agent
 			nextEvents[1] = Simulation.rand.nextDouble();
 	}
 
+/*
 	public Cell divide(Cell[][] landscape)
 	{
 			ArrayList<Cell> avail = getNeighborhood(this.getRow(),this.getCol(),landscape);
 							
-			Cell cell = getPreferredMove(avail,this,landscape);
+			Cell cell = getPreferredMove(avail, landscape);
 
 			return cell;
 	}
+	*/
 
     public void scheduleNextDivide(double time)
     {
     	nextEvents[1] = time + Simulation.rand.nextDouble();
     }
 
-	protected Cell getPreferredMove(ArrayList<Cell> list, Agent a, Cell[][] landscape)
+	protected Cell getPreferredMove(ArrayList<Cell> list, Cell[][] landscape)
 	{
-		int row = a.getRow();
-		int col = a.getCol();
+		System.out.println("Bacteria's method");
+
+		int row = this.getRow();
+		int col = this.getCol();
 
 		if(list.size() == 0)
 		{
-				Cell cell = new Cell(row,col);
-				return cell;
+			Cell cell = landscape[row][col];
+			return cell;
 		}
 
 		int index = Simulation.rand.nextInt(list.size());	
 		return list.get(index);		
 	}
 
-	public boolean isMoveNextEvent() 
-    { 
-    	if(isMove)
-    	{
-    		nextEvents[0] += Simulation.rand.nextDouble();
-    	}
-    	else
-    	{
-    		nextEvents[1] += Simulation.rand.nextDouble();
-    	}
-
-    	return(isMove); 
-    	
-    }
+	
 
 }
