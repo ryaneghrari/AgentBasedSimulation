@@ -1,0 +1,322 @@
+import java.util.ArrayList;
+import java.util.*;
+
+/**
+ * This class implements the next-event simulation engine for your agent-based
+ * simulation.  You may choose to define other helper classes (e.g., Event,
+ * EventList, etc.), but the main while loop of your next-event engine should
+ * appear here, in the run(...) method.
+ */
+
+public class Simulation extends SimulationManager
+{
+    // you may choose to have two separate lists, or only one list of all
+    private ArrayList<Macrophage> macrophageList;
+    private ArrayList<Bacteria> bacteriaList;
+    private ArrayList<Agent> driver; 
+	private Cell[][] landscape;
+	private Random rand = new Random();
+	private int numCells;
+
+    private final int NUM_EVENT_TYPES = 4;
+
+
+
+    /**************************************************************************
+     * Constructs a Simulation object.  This should just perform initialization
+     * and setup.  Later use the object to .run() the simulation.
+     *
+     * @param numCells       number of rows and columns in the environment
+     * @param guiCellWidth   width of each cell drawn in the gui
+     * @param numMacrophages number of initial macrophages in the environment
+     * @param numBacteria    number of initial bacteria in the environment
+     **************************************************************************/
+    public Simulation(int numCells,       int guiCellWidth,
+                      int numMacrophages, int numBacteria)
+    {
+        // call the SimulationManager constructor, which itself makes sure to 
+        // construct and store an AgentGUI object for drawing
+        super(numCells, guiCellWidth);
+        this.numCells = numCells;
+
+        time = 0;
+        macrophageList = new ArrayList<Macrophage>();
+        bacteriaList   = new ArrayList<Bacteria>();
+		landscape	   = new Cell[numCells][numCells];
+
+        for(int i = 0; i < numCells; i++)
+        {
+            for(int j = 0; j < numCells; j++)
+            {
+                landscape[i][j] = new Cell(i, j);
+            }
+        }
+
+        driver         = new ArrayList<Agent>();
+
+        // as a simple example, construct the initial macrophages and
+        // bacteria and add them "at random" to the landscape
+        int row = 0, col = 0;
+        for (int i = 0; i < numMacrophages; i++)
+        {
+			row = rand.nextInt(numCells);
+			col = rand.nextInt(numCells);
+			while (landscape[row][col] != null) 
+            {
+				row = rand.nextInt(numCells);
+				col = rand.nextInt(numCells);
+			}
+            //create macro
+            Macrophage m = new Macrophage(row,col);
+            //add to list of macros
+            macrophageList.add(m);
+            //add to landscape
+            landscape[row][col].occupy(m);
+            //update master event list
+            updateEventList(m);
+        }
+
+        for (int i = 0; i < numBacteria; i++)
+        {
+			row = rand.nextInt(numCells);
+			col = rand.nextInt(numCells);
+			while (landscape[row][col] != null) 
+            {
+				row = rand.nextInt(numCells);
+				col = rand.nextInt(numCells);
+			}
+            //create bacteria
+			Bacteria b = new Bacteria(row,col);
+            //add to list of bacteria
+            bacteriaList.add(b);
+            //add to landscape
+			landscape[row][col].occupy(b);
+            //update master event list
+            updateEventList(b);
+        }
+    }
+
+    private void updateEventList(Agent a) 
+    {
+        double time = a.getNextTime();
+        for (int i = 0; i < driver.size(); i++)
+        {
+            if (time <= driver.get(i).getNextTime())
+            {
+                driver.add(i, a);
+                return;
+            }
+        }
+        driver.add(a);
+        return;
+    }
+
+    /**************************************************************************
+     * Method used to run the simulation.  This method should contain the
+     * implementation of your next-event simulation engine (while loop handling
+     * various event types).
+     *
+     * @param guiDelay  delay in seconds between redraws of the gui
+     **************************************************************************/
+    public void run(double guiDelay) throws InterruptedException
+    {  
+        
+		// create a simple "simulation" example that just moves all the agents
+        // down and to the right...
+        int gridSize = this.gui.getGridSize();
+        
+        //(a.getCol() + 1) % gridSize);
+           
+        while(true)
+        {
+            time = driver.get(0).getNextTime();
+
+            if(driver.get(0).getType() == Agent.AgentType.BACTERIUM)
+            {
+                Bacteria b = (Bacteria)driver.get(0);
+                driver.remove(b);
+                if(b.isMoveNextEvent())
+                {
+                    int[] cell = b.calculateMove(landscape);
+                    landscape[b.getRow()][b.getCol()].removeBacteria();// remove agent from landscape
+                    
+                    // if new cell is not null
+                    Cell cell = landscape[cell[0]][cell[1]];
+                    if(cell.isOccupied())
+                    {   
+                        /*SCHEDULE EAT*/
+                    
+                        if(cell.hasMacrophage())
+                        {
+                            Macrophage m = cell.getMacrophage();
+                            m.scheduleEat(time); // this is a macro
+                            driver.remove(m);
+                            updateEventList(m);
+                        }
+                    }
+                    else
+                    {
+                        cell.occupy(b); // move agent in landscape
+                        b.scheduleNextMove();
+                        updateEventList(b);
+                    }
+                }
+                else // divide event
+                {
+                    Cell cell = a.divide(landscape);
+                    Bacteria b = new Bacteria(cell[0],cell[1]);
+                    bacteriaList.add(b);
+
+                    
+                    if(landscape[cell[0]][cell[1]] != null)
+                    {   
+                        /*SCHEDULE EAT*/
+                        driver.remove(b);
+
+                        //schedule eat time
+                        Macrophage m = (Macrophage)landscape[cell[0]][cell[1]];
+                        boolean moveNext = m.scheduleEat(time); // this is a macro
+                        if(!moveNext)
+                        {
+                            driver.remove(m);
+                            updateEventList(m);
+                        }
+                    }
+                    else
+                    {
+                        landscape[cell[0]][cell[1]] = b;
+                        updateEventList(b);
+                    }
+                }
+                updateEventList(a);
+            }
+            else // Agent is a MACROPHAGE
+            {
+                Macrophage a = (Macrophage)driver.get(0);
+                driver.remove(a);
+                if(a.isMoveNextEvent())
+                {
+                    int[] cell = a.calculateMove(landscape);
+                    landscape[a.getRow()][a.getCol()] = null; // remove agent from landscape
+                    a.setRowCol(cell[0],cell[1]); // update agent location
+
+                    /*SCHEDULE EAT*/
+
+                    landscape[cell[0]][cell[1]] = a; // move agent in landscape
+                }
+                else // eat event
+                {
+            
+                    /*EAT*/
+                    for (int i = 0; i < bacteriaList.size(); i++)
+                    {  
+                        if (a.getCol() == bacteriaList.get(i).getCol() && 
+                            a.getRow() == bacteriaList.get(i).getRow())
+                        {
+                            bacteriaList.remove(i);
+                        }
+                    }
+                    a.cantEat();
+                }
+                updateEventList(a);
+            }
+            
+            
+
+        /*
+
+        // and then move the remaining straight up
+        for(int j = 0; j < 20; j++)
+        {
+            for (int i = 0; i < macrophageList.size(); i++)
+            {
+                //System.out.println("BEFORE");
+                //print();
+
+
+                Macrophage m = macrophageList.get(i);
+                int[] cell = m.calculateMove(landscape);
+                landscape[m.getRow()][m.getCol()] = null; // remove agent from landscape
+
+                m.setRowCol(cell[0],cell[1]); // update agent location
+                
+                /*SCHEDULE EAT
+                if(landscape[cell[0]][cell[1]] != null)
+                {
+                    bacteriaList.remove(landscape[cell[0]][cell[1]]);
+                }
+                
+
+                landscape[cell[0]][cell[1]] = m; // move agent in landscape
+
+                //System.out.println("AFTER");
+                //print();
+
+               // System.out.println("*************************");
+            }
+            for (int i = 0; i < bacteriaList.size(); i++)
+            {
+                //System.out.println("BEFORE");
+               // print();
+                Bacteria b = bacteriaList.get(i);
+				int[] cell = b.calculateMove(landscape);
+                landscape[b.getRow()][b.getCol()] = null; // remove agent from landscape
+                b.setRowCol(cell[0],cell[1]); // update agent location
+                landscape[cell[0]][cell[1]] = b; // move agent in landscape
+                //System.out.println("AFTER");
+                //print();
+                //System.out.println("*************************");
+            }
+        */
+            // remember to update the gui
+            gui.update(guiDelay); 
+        }
+
+    }
+
+    public void print()
+    {
+        for(int i = 0; i < numCells; i++)
+        {
+            for(int j = 0; j < numCells; j++)
+            {
+                System.out.print(landscape[i][j] + "\t");
+            }
+            System.out.println();
+        }
+    }
+
+    /**************************************************************************
+     * Accessor method that returns the number of macrophages still present.
+     * @return an integer representing the number of macrophages present
+     **************************************************************************/
+    public int getNumMacrophages() { return(macrophageList.size()); }
+
+    /**************************************************************************
+     * Accessor method that returns the number of bacteria still present.
+     * @return an integer representing the number of bacteria present
+     **************************************************************************/
+    public int getNumBacteria()    { return(bacteriaList.size()); }
+
+    /**************************************************************************
+     * Accessor method that returns the current time of the simulation clocl.
+     * @return a double representing the current time in simulated time
+     **************************************************************************/
+    public double getTime()        { return(time); }
+
+    /**************************************************************************
+     * Method that constructs and returns a single list of all agents present.
+     * This method is used by the gui drawing routines to update the gui based
+     * on the number and positions of agents present.
+     *
+     * @return an ArrayList<AgentInterface> containing references to all macrophages and bacteria
+     **************************************************************************/
+    public ArrayList<AgentInterface> getListOfAgents()
+    {
+        // your implementation may differ depending on one or two lists...
+        ArrayList<AgentInterface> returnList = new ArrayList<AgentInterface>();
+        for (int i = 0; i < macrophageList.size(); i++) returnList.add( macrophageList.get(i) );
+        for (int i = 0; i < bacteriaList.size(); i++)   returnList.add( bacteriaList.get(i) );
+        return(returnList);
+    }
+}
