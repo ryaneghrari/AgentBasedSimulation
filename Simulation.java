@@ -91,11 +91,11 @@ public class Simulation extends SimulationManager
     private void updateEventList(Agent a) 
     {   
 
-		System.out.println("updating event list ----------------------------");
-		int length = driver.size();
+		System.out.println("-----  updating event list ----------------------------");
 
         driver.remove(a);
 
+		int length = driver.size();
 		double time = a.getNextTime();
         for (int i = 0; i < length; i++)
         {
@@ -103,7 +103,7 @@ public class Simulation extends SimulationManager
             {
                 driver.add(i, a);
 				System.out.println(driver);
-				System.out.println("DONE event list END ----------------------------");
+				System.out.println("-----  DONE updating event list ----------------------------");
                 return;
             }
         }
@@ -152,6 +152,7 @@ public class Simulation extends SimulationManager
 					landscape[b.getRow()][b.getCol()].removeBacteria(); // remove agent from landscape
                     newCell.occupy(b);
 					b.scheduleNextMove(time); //bacteria might get away!
+                    updateEventList(b);       //update event list
 
                     if(newCell.hasMacrophage())
                     {      
@@ -167,6 +168,7 @@ public class Simulation extends SimulationManager
                   System.out.println("Divide event...");
                   b.scheduleNextDivide(time);
                   Cell newCell = b.calculateMove(landscape); 
+                  updateEventList(b);
 
                   if (! (newCell.getRow() == b.getRow() && newCell.getCol() == b.getCol())) 
 				  {
@@ -186,8 +188,6 @@ public class Simulation extends SimulationManager
 							updateEventList(m);
 						}
                   }
-
-                  updateEventList(b);
                 }
             }
             else // Agent is a MACROPHAGE
@@ -211,6 +211,7 @@ public class Simulation extends SimulationManager
                       m1.scheduleEat(time);
                       updateEventList(m1);
                     }
+
 				}
                 else // eat event
                 {
@@ -220,13 +221,18 @@ public class Simulation extends SimulationManager
                     {
                       Bacteria b = currentCell.getBacteria();
                       System.out.println("Eating bacteria: " + b.getID());
-                      currentCell.removeBacteria(); // from landscape
+                      
+					  
+					  currentCell.removeBacteria(); // from landscape... does this work?
+
+
                       driver.remove(b); // from event list
                       bacteriaList.remove(b); // from list of bacteria
                     }
 
                     m.scheduleEat(Double.MAX_VALUE);
                 }
+
                 m.scheduleNextMove(time);
                 updateEventList(m);
             }
@@ -234,6 +240,7 @@ public class Simulation extends SimulationManager
             // remember to update the gui
             gui.update(guiDelay);
             System.out.println("******************* END EVENT *******************");
+            System.out.println();
         }
 
     }
@@ -245,7 +252,7 @@ public class Simulation extends SimulationManager
       {
         System.out.println(i + ": \t Next event time: " + driver.get(i).getNextTime());
       }
-	  System.out.println("------------------------Driver----------------------");
+	  System.out.println("------------------------Driver-end------------------");
     }
 
     public void print()
