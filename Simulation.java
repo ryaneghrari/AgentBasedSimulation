@@ -129,6 +129,8 @@ public class Simulation extends SimulationManager
 	public void run(double guiDelay) throws InterruptedException
 	{  
 
+        this.gui        = new AgentGUI(this, numCells, guiCellWidth);
+
 		// create a simple "simulation" example that just moves all the agents
 		// down and to the right...
 		int gridSize = this.gui.getGridSize();

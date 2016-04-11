@@ -10,9 +10,12 @@ import java.util.ArrayList;
 
 public abstract class SimulationManager
 {
-    protected double           time;    // the simulation time clock
-    protected double           maxTime; // maximum simulation time
-    protected AgentGUI         gui;     // reference to gui for drawing
+    protected double    time;          // the simulation time clock
+    protected double    maxTime;       // maximum simulation time
+    protected AgentGUI  gui;           // reference to gui for drawing
+    protected int       numCells;      // num cells in landscape/gui
+    protected int       guiCellWidth;  // width of gui cell in landscape
+
 
     /**************************************************************************
      * Constructor for an (abstract) SimulationManager.  Primarily this ensures
@@ -21,10 +24,15 @@ public abstract class SimulationManager
      * @param numCells       number of rows and columns in the environment
      * @param guiCellWidth   width of each cell drawn in the gui
      **************************************************************************/
-    public SimulationManager(int numCells, int guiCellWidth, int maxTime)
+    public SimulationManager(int numCells, int guiCellWidth, double maxTime)
     {
-        this.maxTime  = maxTime;
-        this.gui      = new AgentGUI(this, numCells, guiCellWidth);
+        this.maxTime      = maxTime;
+        this.numCells     = numCells;
+        this.guiCellWidth = guiCellWidth;
+
+        // an equivalent of the commented line below must go at the start of
+        // your run() method!
+//        this.gui        = new AgentGUI(this, numCells, guiCellWidth);
     }
 
     // ************************************************************************
