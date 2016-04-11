@@ -136,8 +136,6 @@ public class Agent implements AgentInterface
 		}
 
 		int index = Simulation.rand.nextInt(list.size());	
-		return list.get(index);	
-			
+		return list.get(index);			
 	}
-
 }

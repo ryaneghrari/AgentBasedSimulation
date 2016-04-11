@@ -14,17 +14,6 @@ public class Bacteria extends Agent
 			nextEvents[1] = Simulation.rand.nextDouble();
 	}
 
-/*
-	public Cell divide(Cell[][] landscape)
-	{
-			ArrayList<Cell> avail = getNeighborhood(this.getRow(),this.getCol(),landscape);
-							
-			Cell cell = getPreferredMove(avail, landscape);
-
-			return cell;
-	}
-	*/
-
     public void scheduleNextDivide(double time)
     {
     	nextEvents[1] = time + Simulation.rand.nextDouble();
@@ -46,7 +35,4 @@ public class Bacteria extends Agent
 		int index = Simulation.rand.nextInt(list.size());	
 		return list.get(index);		
 	}
-
-	
-
 }
