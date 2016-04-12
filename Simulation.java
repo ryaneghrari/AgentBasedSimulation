@@ -91,7 +91,7 @@ public class Simulation extends SimulationManager
 	private void updateEventList(Agent a) 
 	{   
 
-		System.out.println("-----  updating event list ----------------------------");
+		//System.out.println("-----  updating event list ----------------------------");
 
 		driver.remove(a);
 
@@ -102,16 +102,16 @@ public class Simulation extends SimulationManager
 			if (time <= driver.get(i).getNextTime())
 			{
 				driver.add(i, a);
-				System.out.println(driver);
-				System.out.println("-----  DONE updating event list ----------------------------");
+		//		System.out.println(driver);
+		//		System.out.println("-----  DONE updating event list ----------------------------");
 				return;
 			}
 		}
 
 		driver.add(a); //add at the end
 
-		System.out.println(driver);
-		System.out.println("DONE event list END ----------------------------");
+		//System.out.println(driver);
+		//System.out.println("DONE event list END ----------------------------");
 	}
 
 	public double getMaxTime()
@@ -139,17 +139,17 @@ public class Simulation extends SimulationManager
 		while(true)
 		{
 			time = driver.get(0).getNextTime();
-			System.out.println("****************** BEGIN EVENT ******************");
-			printDriver();
-			System.out.println("Time is:\t" + time);
+			//System.out.println("****************** BEGIN EVENT ******************");
+			//printDriver();
+			//System.out.println("Time is:\t" + time);
 			if(driver.get(0).getType() == Agent.AgentType.BACTERIUM)
 			{
 				Bacteria b = (Bacteria)driver.get(0);
-				System.out.println("Handling Bacteria:\t" + b.getID());
+			//	System.out.println("Handling Bacteria:\t" + b.getID());
 
 				if(b.isMoveNextEvent())
 				{
-					System.out.println("Move event...");
+					//System.out.println("Move event...");
 					Cell newCell = b.calculateMove(landscape); 
 				landscape[b.getRow()][b.getCol()].removeBacteria(); // remove agent from landscape
 				newCell.occupy(b);
@@ -160,14 +160,14 @@ public class Simulation extends SimulationManager
 				{      
 					/*SCHEDULE EAT*/
 					Macrophage m = newCell.getMacrophage(); //bacteria moved into a macrophage cell.. yum yum
-					System.out.println("Scheduling eat by:\t" + m.getID());
+			//		System.out.println("Scheduling eat by:\t" + m.getID());
 					m.scheduleEat(time);
 					updateEventList(m);
 				}
 			}		
 				else // divide event
 				{
-					System.out.println("Divide event...");
+			//		System.out.println("Divide event...");
 					b.scheduleNextDivide(time);
 					Cell newCell = b.calculateMove(landscape); 
 					updateEventList(b);
@@ -185,7 +185,7 @@ public class Simulation extends SimulationManager
 						{      
 							/*SCHEDULE EAT*/
 							Macrophage m = newCell.getMacrophage(); //bacteria moved into a macrophage cell.. yum yum
-							System.out.println("Scheduling eat by:\t" + m.getID());
+			//				System.out.println("Scheduling eat by:\t" + m.getID());
 							m.scheduleEat(time);
 							updateEventList(m);
 						}
@@ -195,11 +195,11 @@ public class Simulation extends SimulationManager
 			else // Agent is a MACROPHAGE
 			{
 				Macrophage m = (Macrophage)driver.get(0);
-				System.out.println("Handling Macrophage:\t" + m.getID());
+			//	System.out.println("Handling Macrophage:\t" + m.getID());
 
 				if(m.isMoveNextEvent())
 				{
-					System.out.println("Move event...");
+			//		System.out.println("Move event...");
 					Cell newCell = m.calculateMove(landscape);
 					landscape[m.getRow()][m.getCol()].removeMacrophage(); // remove agent from landscape
 					newCell.occupy(m);
@@ -209,7 +209,7 @@ public class Simulation extends SimulationManager
 					{      
 						/*SCHEDULE EAT*/
 						Macrophage m1 = newCell.getMacrophage(); 
-						System.out.println("Scheduling eat by:\t" + m1.getID());
+			//			System.out.println("Scheduling eat by:\t" + m1.getID());
 						m1.scheduleEat(time);
 						updateEventList(m1);
 					}
@@ -218,12 +218,12 @@ public class Simulation extends SimulationManager
 				}
 				else // eat event
 				{
-					System.out.println("Attempting to eat bacteria...");
+			//		System.out.println("Attempting to eat bacteria...");
 					Cell currentCell = landscape[m.getRow()][m.getCol()];
 					if(currentCell.hasBacteria())
 					{
 						Bacteria b = currentCell.getBacteria();
-						System.out.println("Eating bacteria: " + b.getID());
+			//			System.out.println("Eating bacteria: " + b.getID());
 
 
 					  currentCell.removeBacteria(); // from landscape... does this work?
@@ -241,8 +241,8 @@ public class Simulation extends SimulationManager
 
 			// remember to update the gui
 			gui.update(guiDelay);
-			System.out.println("******************* END EVENT *******************");
-			System.out.println();
+		//	System.out.println("******************* END EVENT *******************");
+		//	System.out.println();
 		}
 
 	}

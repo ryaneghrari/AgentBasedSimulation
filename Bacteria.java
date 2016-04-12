@@ -21,7 +21,7 @@ public class Bacteria extends Agent
 
 	protected Cell getPreferredMove(ArrayList<Cell> list, Cell[][] landscape)
 	{
-		System.out.println("Bacteria's method");
+//		System.out.println("Bacteria's method");
 
 		int row = this.getRow();
 		int col = this.getCol();

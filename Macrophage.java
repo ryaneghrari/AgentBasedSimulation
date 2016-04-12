@@ -15,7 +15,7 @@ public class Macrophage extends Agent
 
 	protected Cell getPreferredMove(ArrayList<Cell> list, Cell[][] landscape)
 	{
-		System.out.println("Macro's method");
+//		System.out.println("Macro's method");
 		int row = this.getRow();
 		int col = this.getCol();
 		if(list.size() == 0)
@@ -51,6 +51,6 @@ public class Macrophage extends Agent
 
     public void scheduleEat(double time)
     {
-    	nextEvents[1] = time;//+ Simulation.rand.nextDouble();
+    	nextEvents[1] = time; //+ Simulation.rand.nextDouble();
     }
 }
