@@ -4,7 +4,7 @@ public class Tester
     {
         // construct a simulation object w/ appropriate parameters and then run
         int numCells       = 40;
-        int guiCellWidth   = 10;
+        int guiCellWidth   = 15;
         int numMacrophages = 50;
         int numBacteria    = 100;
 		int maxTime        = 100;
@@ -13,7 +13,7 @@ public class Tester
                                       numMacrophages, numBacteria,maxTime);
         
 		
-		double guiDelayInSecs = .01;
+		double guiDelayInSecs = .005;
 		
 
 

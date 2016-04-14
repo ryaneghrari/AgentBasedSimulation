@@ -12,7 +12,7 @@ class AgentGUI extends WindowManager
     private SimulationManager simulation;     // a reference to the simulation object
     private AgentCanvas       canvas;         // for drawing the agents
     private TimeSeriesDialog  dialog;         // for drawing time series
-    private int               lastUpdateTime; // for updating dialog
+    private double               lastUpdateTime; // for updating dialog
 
     /**************************************************************************
      * Constructor for the agent GUI window.
@@ -64,11 +64,11 @@ class AgentGUI extends WindowManager
 
         // and update the time series dialog -- only on integer time steps
         double t = simulation.getTime();
-        if ((int)t > lastUpdateTime)
+        if (t > lastUpdateTime)
         {
             this.dialog.updateCounts(simulation.getNumMacrophages(), 
                                      simulation.getNumBacteria());
-            lastUpdateTime++;
+            lastUpdateTime += .1;
         }
     }
     

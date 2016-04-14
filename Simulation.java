@@ -131,8 +131,6 @@ public class Simulation extends SimulationManager
 
         this.gui        = new AgentGUI(this, numCells, guiCellWidth);
 
-		// create a simple "simulation" example that just moves all the agents
-		// down and to the right...
 		int gridSize = this.gui.getGridSize();
 
 
@@ -299,7 +297,7 @@ public class Simulation extends SimulationManager
 		// your implementation may differ depending on one or two lists...
 		ArrayList<AgentInterface> returnList = new ArrayList<AgentInterface>();
 		for (int i = 0; i < macrophageList.size(); i++) returnList.add( macrophageList.get(i) );
-			for (int i = 0; i < bacteriaList.size(); i++)   returnList.add( bacteriaList.get(i) );
-				return(returnList);
-		}
+		for (int i = 0; i < bacteriaList.size(); i++)   returnList.add( bacteriaList.get(i) );
+		return(returnList);
 	}
+}
