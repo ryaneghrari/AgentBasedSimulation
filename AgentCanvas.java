@@ -134,6 +134,8 @@ class AgentCanvas extends JPanel implements MouseListener
         {
             AgentInterface a = agentsList.get(i);
 
+			if(a == null){continue;}
+
             // make sure not to draw any agent outside the image boundaries;
             // remember that graphics x corresponds to column and graphics y
             // corresponds to row
